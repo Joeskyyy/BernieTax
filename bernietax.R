@@ -255,7 +255,7 @@ eitc <- function(inc, agi) {
   #max <- 5548
   #fullPhaseout <- 44651
   #pPhaseout <- .2106
-  pPhasein <- .4
+  #pPhasein <- .4
   
   #single filing, with no kids
   fullPhaseout <- 14820
