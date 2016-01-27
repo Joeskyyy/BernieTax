@@ -11,9 +11,9 @@ nilBracket <- data.frame(
 # https://berniesanders.com/issues/medicare-for-all
 # https://berniesanders.com/wp-content/uploads/2016/01/friedman-memo-1.pdf
 incomeBracketsBernie <- data.frame(
-  bottom = c(0, 18450, 74900, 151200, 230450, 250000, 
+  bottom = c(0, 18450, 74900, 151200, 230450, 250000,
              499999, 2000000, 10000000),
-  cap = c(18450, 74900, 151200, 230450, 250000, 
+  cap = c(18450, 74900, 151200, 230450, 250000,
           499999, 2000000, 10000000, Inf),
   rate  = c(.1, .15, .25, .28, .33, .37, .43, .48, .52),
   extra = 0, deduct = 1
@@ -35,13 +35,13 @@ incomeBracketsCurrent <- data.frame(
 # for the year. Determine the amount of withholding for social security and
 # Medicare taxes by multiplying each payment by the employee tax rate. There are
 # no withholding allowances for social security and Medicare taxes.
-# 
+#
 # For 2016, the social security tax rate is 6.2% (amount withheld) each for the
 # employer and employee (12.4% total). The social security wage base limit is
 # $118,500. The tax rate for Medicare is 1.45% (amount withheld) each for the
 # employee and employer (2.9% total). There is no wage base limit for Medicare
 # tax; all covered wages are subject to Medicare tax.
-# 
+#
 # Additional Medicare Tax withholding.   In addition to withholding Medicare tax
 # at 1.45%, you must withhold a 0.9% Additional Medicare Tax from wages you pay
 # to an employee in excess of $200,000 in a calendar year. You are required to
@@ -68,12 +68,12 @@ medicareBracketsCurrent <- data.frame(
 
 #https://www.ssa.gov/oact/solvency/BSanders_20150323.pdf
 #earnings in the 118500 - 250000 range are not
-#taxed unless the total earnings are > 250000 
+#taxed unless the total earnings are > 250000
 #($8,153 in taxes for the 118500 - 250000 range)
 #extra field compensates
 ssBracketsBernie <- data.frame(
-  bottom = c(0, 118500, 250000),  
-  cap = c(118500, 250000, Inf),  
+  bottom = c(0, 118500, 250000),
+  cap = c(118500, 250000, Inf),
   rate = c(.062, 0, .062),
   extra = c(0, 0, 8153),
   deduct = 0
@@ -94,13 +94,13 @@ familyLeaveBracketsBernie <- data.frame(
   bottom = c(0, 113700),
   cap = c(113700, Inf),
   rate = c(.002, 0),
-  extra = 0, 
+  extra = 0,
   deduct = 0
 )
 
-#federal poverty level for family of 4
+#federal poverty level for family of 1
 #http://familiesusa.org/product/federal-poverty-guidelines
-fpl4 <- 24250
+fpl4 <- 11770
 
 # 35 hours per week at minmum wage is 54% of FPL (below medicaid threshold)
 # Therefore anyone earning above the medicaid threshold will should eligible for
@@ -110,23 +110,23 @@ healthPremBracketsCurrent <- data.frame(
   bottom = c(0, fpl4 * 1.33),
   cap = c(fpl4 * 1.33, Inf),
   rate = c(0, 0),
-  extra = c(0, 6408), 
+  extra = c(0, 6408),
   deduct = 0
 )
 
 
 #out of pocket expenses set at 2.4% for medicaid recipients, or at the
-#national average of $4,065 for all others 
+#national average of $4,065 for all others
 #(assumes state with obamacare medicaid expansion)
 #http://www.cbpp.org/research/out-of-pocket-medical-expenses-for-medicaid-beneficiaries-are-substantial-and-growing
-#http://www.milliman.com/uploadedFiles/insight/Periodicals/mmi/2015-MMI.pdf 
+#http://www.milliman.com/uploadedFiles/insight/Periodicals/mmi/2015-MMI.pdf
 #page 7
 #http://obamacarefacts.com/obamacares-medicaid-expansion/
 healthPocketBracketsCurrent <- data.frame(
   bottom = c(0, fpl4 * 1.33),
   cap = c(fpl4 * 1.33, Inf),
   rate = c(.024, 0),
-  extra = c(0, 4065 - .024 * fpl4 * 1.33), 
+  extra = c(0, 4065 - .024 * fpl4 * 1.33),
   deduct = 0
 )
 
@@ -138,7 +138,7 @@ healthEmpBracketsCurrent <- data.frame(
   bottom = c(0, fpl4*1.33),
   cap = c(fpl4*1.33, Inf),
   rate = 0,
-  extra = c(0, 14198), 
+  extra = c(0, 14198),
   deduct = 0
 )
 
@@ -163,7 +163,7 @@ corpWelfareGapCurrent <- data.frame(
 corpWelfareGapBernie <- nilBracket
 
 taxNamesInd <- c("Income Tax", "Social Security Tax", "Medicare Tax",
-                 "Medicare-for-all Tax", "Family Leave Tax", 
+                 "Medicare-for-all Tax", "Family Leave Tax",
                  "Healthcare Premiums", "Healthcare Expenses")
 taxNamesEmp <- c("Employer Healthcare\nContribution",
                  "Employer Payroll Tax", "Corporate Welfare")
@@ -216,9 +216,9 @@ taxes <- function(incomes, bracketsList, deductions = 0) {
   ret <- sapply(bracketsList, tax, income = incomes, deduction = deductions)
   ret <- data.frame(ret, check.names = F)
   #ret <- data.frame(t(ret), check.names = F)
-  
+
   ret$income <- incomes
-  ret$effectiveIncome <- incomes + 
+  ret$effectiveIncome <- incomes +
     rowSums(ret[, na.omit(match(taxNamesEmp, names(ret)))], na.rm = T)
   ret$agi <- pmax(incomes - deductions, 0)
   ret
@@ -233,7 +233,7 @@ incomes <- seq(8000, 402000, by = 2000)
 #joint deduction
 #standardDeduction <- 12600
 #single deduction
-standardDeduction <- 6200
+standardDeduction <- 6300
 #https://www.irs.gov/publications/p17/ch03.html
 #exemptions with 4 dependents
 #exemptions <- 4 * 4000
@@ -256,34 +256,36 @@ eitc <- function(inc, agi) {
   #fullPhaseout <- 44651
   #pPhaseout <- .2106
   #pPhasein <- .4
-  
+
   #single filing, with no kids
   fullPhaseout <- 14820
   max <- 503
   pPhaseout <- .0765
   pPhasein <- .0765
-  
+
   #calulcate phaseout threshold based on where credit reduces to $0
   startPhaseout <- fullPhaseout - max / pPhaseout
   # credit = 40% of income up to max of 5548 minus 21.05% percent of agi
   # over phaseout threshold down to a minimum credit of 0$ at agi of $44,651
-  pmin(inc * pPhasein, max) - 
+  pmin(inc * pPhasein, max) -
     pmin(pmax(agi - startPhaseout, 0) * pPhaseout, max)
 }
 
 ##Child tax credit
 #https://www.irs.gov/publications/p972/ar02.html
 ctc <- function(agi, income, incTax, nkids = 0) {
-  incTax <- pmax(0, incTax)
-  ctc <- nkids * 1000
+  #incTax <- pmax(0, incTax)
+  #ctc <- nkids * 1000
   #reduce max ctc by 5% of income over $110,000 rounded up to nearest thousand
-  ctc <- pmax(ctc - pmax(ceiling((agi - 110000) / 1000) * 1000 * .05, 0), 0)
+  #ctc <- pmax(ctc - pmax(ceiling((agi - 110000) / 1000) * 1000 * .05, 0), 0)
   #creditable ctc is smaller of remaning ctc (after taxes reduced to 0) or 15%
   #of earned income over $3K
-  actc <- pmax(pmin(ctc - incTax, .15 * pmax(income - 3000, 0)), 0)
+  #actc <- pmax(pmin(ctc - incTax, .15 * pmax(income - 3000, 0)), 0)
   #credit is full ctc up to the point that taxes are reduced to zero, plus
   #credtiable portion of the remainder
-  pmin(ctc, incTax) + actc
+  #pmin(ctc, incTax) + actc
+
+  ctc <- 0
 }
 
 cur <- taxes(incomes, currentIndBrackets, totalDeduction)
@@ -293,7 +295,7 @@ cur <- cur %>% mutate(set = "Current", payer = "Individual",
 bern <- taxes(incomes, bernieIndBrackets, totalDeduction)
 bern <- bern %>% mutate(set = "Bernie", payer = "Individual",
                       `Income Tax` = `Income Tax` - eitc(income, agi),
-                      `Income Tax` = `Income Tax` - 
+                      `Income Tax` = `Income Tax` -
                         ctc(agi, income, `Income Tax`))
 curEmp <- taxes(incomes, currentEmpBrackets)
 curEmp$set <- "Current"
@@ -308,8 +310,8 @@ dat <- rbind(gather(rbind(cur, bern),
                     expense, amount, -income, -effectiveIncome, -set, -payer, -agi))
 
 #total effective tax rates
-datSum <- dat %>% group_by(payer, set, income, effectiveIncome, agi) %>% 
-  summarize(tTax = sum(amount)) %>% ungroup %>% 
+datSum <- dat %>% group_by(payer, set, income, effectiveIncome, agi) %>%
+  summarize(tTax = sum(amount)) %>% ungroup %>%
   mutate(eTax = tTax / effectiveIncome,
          payer = factor(payer, levels = c("Individual", "Employer")))
 
@@ -317,7 +319,7 @@ datSum <- dat %>% group_by(payer, set, income, effectiveIncome, agi) %>%
 ##income distribution data from US census, 2014 family incomes
 #https://www.census.gov/hhes/www/cpstables/032015/faminc/toc.htm
 acs <- read_excel("finc07.xls", skip = 8)[c(-1, -46), 1:3]
-acs <- acs %>% rename(income = `Mean \n Income (dollars)`) %>% 
+acs <- acs %>% rename(income = `Mean \n Income (dollars)`) %>%
   mutate(prop = Number / sum(Number), centile = cumsum(prop),
          payer = "Population")
 getIncomeForPercentile <- approxfun(acs$centile, acs$income)
@@ -332,7 +334,7 @@ percentiles <- data.frame(p = c(seq(.25, .75, by = .25), .95))
 percentiles <- mutate(percentiles, income = getIncomeForPercentile(p),
                       labs = paste0(as.character(p * 100), "th Percentile"),
                       xlabs = paste(scales::dollar(income), labs, sep = "\n"))
-percentiles$xlabs[percentiles$p == .5] <- 
+percentiles$xlabs[percentiles$p == .5] <-
   sub("50th Percentile", "Median", percentiles$xlabs[percentiles$p == .5])
 
 centileLabeler <- function(breaks) {
@@ -345,8 +347,8 @@ centileLabeler <- function(breaks) {
 datSum <- mutate(datSum, percentile = getPercentileForIncome(income))
 
 #differences between plans / ribbon data
-datDiff <- inner_join(filter(datSum, set == "Bernie"), 
-                      filter(datSum, set == "Current"), 
+datDiff <- inner_join(filter(datSum, set == "Bernie"),
+                      filter(datSum, set == "Current"),
                       by = c("payer", "income", "percentile")) %>%
   rename(eTaxBern = eTax.x, eTaxCur = eTax.y) %>%
   mutate(increase = eTaxBern > eTaxCur,
@@ -356,7 +358,7 @@ datDiff <- inner_join(filter(datSum, set == "Bernie"),
          dBottom = ifelse(!increase, eTaxBern, NA))
 
 savings <- datDiff %>% filter(payer == "Individual") %>%
-  mutate(delta = (eTaxCur - eTaxBern) * income, 
+  mutate(delta = (eTaxCur - eTaxBern) * income,
          mid = (eTaxCur + eTaxBern)/2)
 whichSavings <- c(which.min(abs(savings$percentile - .25)),
                   which.min(abs(savings$percentile - .5)),
@@ -364,7 +366,7 @@ whichSavings <- c(which.min(abs(savings$percentile - .25)),
                   which.max(savings$percentile))
 #whichSavings <- c(40000, 80000, 120000, 400000)
 savings <- savings[whichSavings,
-                   c("income", "delta", "mid", 
+                   c("income", "delta", "mid",
                      "eTaxCur", "eTaxBern")]
 #savings$percentile <- getPercentileForIncome(whichSavings)
 savings$percentile <- c(.25, .5, .75, max(datDiff$percentile))
