@@ -44,7 +44,7 @@ mutate_each(datDiff, funs(ifelse(is.na(.), 0.1216513, .)), starts_with("i"),
         panel.background = element_blank(),
         axis.ticks.x = element_blank()) +
   labs(y = "Tax and Healthcare Burden (% of income)", 
-       x = "Income for a Family of 4 (USD)", 
+       x = "Income for a person filing single and claiming 0 (USD)", 
        title = "Just How Much Would Bernie Sanders Tax Me?") #+
 
 
