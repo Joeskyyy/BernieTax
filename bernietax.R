@@ -230,10 +230,19 @@ incomes <- seq(8000, 402000, by = 2000)
 ##Deductions and credits
 
 #https://www.irs.com/articles/2015-federal-tax-rates-personal-exemptions-and-standard-deductions
-standardDeduction <- 12600
+#joint deduction
+#standardDeduction <- 12600
+#single deduction
+standardDeduction <- 6200
 #https://www.irs.gov/publications/p17/ch03.html
-exemptions <- 4 * 4000
-exPhaseOut <- pmin(ceiling(pmax(0, incomes - 309900) / 2500) * .02, 1)
+#exemptions with 4 dependents
+#exemptions <- 4 * 4000
+#exemptions with no kids, single filing
+exemptions <- 0
+#phaseouts with 4 children, join
+#exPhaseOut <- pmin(ceiling(pmax(0, incomes - 309900) / 2500) * .02, 1)
+#phaseouts single filing
+exPhaseOut <- pmin(ceiling(pmax(0, incomes - 258250) / 2500) * .02, 1)
 exemptions <- exemptions - exemptions * exPhaseOut
 totalDeduction <- standardDeduction + exemptions
 #incomes <- seq(20000, 5000000, by = 10000)
@@ -242,10 +251,18 @@ totalDeduction <- standardDeduction + exemptions
 #https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts
 #https://www.law.cornell.edu/uscode/text/26/32
 eitc <- function(inc, agi) {
-  max <- 5548
-  fullPhaseout <- 44651
-  pPhaseout <- .2106
+  #joint filing, with 4 kids
+  #max <- 5548
+  #fullPhaseout <- 44651
+  #pPhaseout <- .2106
   pPhasein <- .4
+  
+  #single filing, with no kids
+  fullPhaseout <- 14820
+  max <- 503
+  pPhaseout <- .0765
+  pPhasein <- .0765
+  
   #calulcate phaseout threshold based on where credit reduces to $0
   startPhaseout <- fullPhaseout - max / pPhaseout
   # credit = 40% of income up to max of 5548 minus 21.05% percent of agi
@@ -256,7 +273,7 @@ eitc <- function(inc, agi) {
 
 ##Child tax credit
 #https://www.irs.gov/publications/p972/ar02.html
-ctc <- function(agi, income, incTax, nkids = 2) {
+ctc <- function(agi, income, incTax, nkids = 0) {
   incTax <- pmax(0, incTax)
   ctc <- nkids * 1000
   #reduce max ctc by 5% of income over $110,000 rounded up to nearest thousand
